@@ -31,19 +31,25 @@
 <%!
     public static String buildInformatorTomcat(Integer sServerletMajor, Integer sServletMinor, String sTomcatVersion) {
         ArrayList<String> listElement = new ArrayList<String>();
-        listElement.add("\"" + "CATALINA_BASE" + "\": \"" + System.getProperty("catalina.base").replace("\\", "\\\\") + "\"");
-        listElement.add("\"" + "CATALINA_HOME" + "\": \"" + System.getProperty("catalina.home").replace("\\", "\\\\") + "\"");
-        listElement.add("\"" + "JAVA_HOME" + "\": \"" + System.getProperty("java.home").replace("\\", "\\\\") + "\"");
         listElement.add("\"" + "Application Name" + "\": \"" + sTomcatVersion.split("/")[0] + "\"");
         listElement.add("\"" + "Application Version" + "\": \"" + sTomcatVersion.split("/")[1] + "\"");
-        listElement.add("\"" + "Java Runtime Version" + "\": \"" + System.getProperty("java.runtime.version").replace("\\", "\\\\") + "\"");
-        listElement.add("\"" + "Java Specification Version" + "\": \"" + System.getProperty("java.specification.version").replace("\\", "\\\\") + "\"");
-        listElement.add("\"" + "Java Version" + "\": \"" + System.getProperty("java.version").replace("\\", "\\\\") + "\"");
-        listElement.add("\"" + "Java VM Name" + "\": \"" + System.getProperty("java.vm.name").replace("\\", "\\\\") + "\"");
-        listElement.add("\"" + "Java VM Specification Name" + "\": \"" + System.getProperty("java.vm.specification.name").replace("\\", "\\\\") + "\"");
-        listElement.add("\"" + "Java VM Version" + "\": \"" + System.getProperty("java.vm.version").replace("\\", "\\\\") + "\"");
-        listElement.add("\"" + "Java Vendor" + "\": \"" + System.getProperty("java.vendor").replace("\\", "\\\\") + "\"");
+        listElement.add("\"" + "Catalina Base" + "\": \"" + System.getProperty("catalina.base").replace("\\", "\\\\") + "\"");
+        listElement.add("\"" + "Catalina Home" + "\": \"" + System.getProperty("catalina.home").replace("\\", "\\\\") + "\"");
+        listElement.add("\"" + "Java Class Version" + "\": \"" + System.getProperty("java.class.version") + "\"");
+        listElement.add("\"" + "Java Home" + "\": \"" + System.getProperty("java.home").replace("\\", "\\\\") + "\"");
+        listElement.add("\"" + "Java Runtime Name" + "\": \"" + System.getProperty("java.runtime.name") + "\"");
+        listElement.add("\"" + "Java Runtime Version" + "\": \"" + System.getProperty("java.runtime.version") + "\"");
+        listElement.add("\"" + "Java Specification Name" + "\": \"" + System.getProperty("java.specification.name") + "\"");
+        listElement.add("\"" + "Java Specification Vendor" + "\": \"" + System.getProperty("java.specification.vendor") + "\"");
+        listElement.add("\"" + "Java Specification Version" + "\": \"" + System.getProperty("java.specification.version") + "\"");
+        listElement.add("\"" + "Java Vendor" + "\": \"" + System.getProperty("java.vendor") + "\"");
         listElement.add("\"" + "Java Version" + "\": \"" + System.getProperty("java.version") + "\"");
+        listElement.add("\"" + "Java Version" + "\": \"" + System.getProperty("java.version") + "\"");
+        listElement.add("\"" + "Java VM Info" + "\": \"" + System.getProperty("java.vm.info") + "\"");
+        listElement.add("\"" + "Java VM Name" + "\": \"" + System.getProperty("java.vm.name") + "\"");
+        listElement.add("\"" + "Java VM Specification Name" + "\": \"" + System.getProperty("java.vm.specification.name") + "\"");
+        listElement.add("\"" + "Java VM Vendor" + "\": \"" + System.getProperty("java.vm.vendor") + "\"");
+        listElement.add("\"" + "Java VM Version" + "\": \"" + System.getProperty("java.vm.version") + "\"");
         listElement.add("\"" + "JSP Version" + "\": \"" + JspFactory.getDefaultFactory().getEngineInfo().getSpecificationVersion() + "\"");
         listElement.add("\"" + "Operating System Architecture" + "\": \"" + System.getProperty("os.arch") + "\"");
         listElement.add("\"" + "Operating System Name" + "\": \"" + System.getProperty("os.name") + "\""); 
@@ -51,6 +57,9 @@
         listElement.add("\"" + "Servlet Version" + "\": \"" + sServerletMajor + "." + sServletMinor + "\"");
         listElement.add("\"" + "Temporary Folder" + "\": \"" + System.getProperty("java.io.tmpdir").replace("\\", "\\\\") + "\"");
         listElement.add("\"" + "User Account Name" + "\": \"" + System.getProperty("user.name") + "\"");
+        listElement.add("\"" + "User Country" + "\": \"" + System.getProperty("user.country") + "\"");
+        listElement.add("\"" + "User Language" + "\": \"" + System.getProperty("user.language") + "\"");
+        listElement.add("\"" + "User Time Zone" + "\": \"" + System.getProperty("user.timezone") + "\"");
         String sReturn = String.join(", ", listElement);
         return "{ " + sReturn + " }";
     }
