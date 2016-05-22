@@ -59,7 +59,9 @@
         listElement.add("\"" + "User Account Name" + "\": \"" + System.getProperty("user.name") + "\"");
         listElement.add("\"" + "User Country" + "\": \"" + System.getProperty("user.country") + "\"");
         listElement.add("\"" + "User Language" + "\": \"" + System.getProperty("user.language") + "\"");
+        listElement.add("\"" + "User Home Folder" + "\": \"" + System.getProperty("user.home").replace("\\", "\\\\") + "\"");
         listElement.add("\"" + "User Time Zone" + "\": \"" + System.getProperty("user.timezone") + "\"");
+        //listElement.add("\"" + "LOG" + "\": \"" + System.getProperty("java.util.logging.FileHandler.directory") + "\"");
         String sReturn = String.join(", ", listElement);
         return "{ " + sReturn + " }";
     }
