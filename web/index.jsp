@@ -5,7 +5,7 @@
 
     The MIT License (MIT)
 
-    Copyright (c) 2015 Daniel Popiniuc
+    Copyright (c) 2015-2016 Daniel Popiniuc
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -27,14 +27,33 @@
 
 --%>
 <%@page contentType="application/json" pageEncoding="utf-8"%>
-<%@page import="java.util.ArrayList" %>
-<%@page import="java.util.Collections" %>
+<%@page import = "java.io.File" %>
+<%@page import = "java.util.ArrayList" %>
+<%@page import = "java.util.Enumeration" %>
+<%@page import = "java.util.Collections" %>
 <%!
     public static String explodeAndSort(String inputString, String inputSeparator) {
         ArrayList<String> listCommonLoader = new ArrayList<String>();
         Collections.addAll(listCommonLoader, inputString.split("\\s*" + inputSeparator + "\\s*"));
         Collections.sort(listCommonLoader);
         return "\"" + String.join("\", \"", listCommonLoader) + "\"";
+    }
+    public static String listOfFilesWithinFolderReccursive(String inputFolder) {
+        ArrayList<String> listOfJustFiles = new ArrayList<String>();
+        File[] listOfFiles  = new File(inputFolder).listFiles();
+        if (listOfFiles == null) {
+            listOfJustFiles.add("directory " + inputFolder + " does not exist (check your configuration or adjust folder value");
+        } else {
+            for (int i = 0; i < listOfFiles.length; i++) {
+                if (listOfFiles[i].isFile()) {
+                    listOfJustFiles.add(listOfFiles[i].getName());
+                } else if (listOfFiles[i].isDirectory()) {
+                    listOfFilesWithinFolderReccursive(listOfFiles[i].getAbsolutePath());
+                }
+            }
+            Collections.sort(listOfJustFiles);
+        }
+        return "\"" + String.join("\", \"", listOfJustFiles) + "\"";
     }
     public static String buildInformatorTomcat(Integer sServerletMajor, Integer sServletMinor, String sTomcatVersion) {
         ArrayList<String> listElement = new ArrayList<String>();
@@ -45,6 +64,7 @@
         listElement.add("\"" + "Catalina Home" + "\": \"" + System.getProperty("catalina.home").replace("\\", "\\\\") + "\"");
         listElement.add("\"" + "Common Loader" + "\": [" + explodeAndSort(System.getProperty("common.loader").replace("\"", "").replace("${catalina.base}", "${catalina.base} => "+System.getProperty("catalina.base").replace("\\", "/")).replace("${catalina.home}", "${catalina.home} => "+System.getProperty("catalina.home").replace("\\", "/")), ",") + "]");
         listElement.add("\"" + "JSP Version" + "\": \"" + JspFactory.getDefaultFactory().getEngineInfo().getSpecificationVersion() + "\"");
+        listElement.add("\"" + "JasperReports libraries" + "\": [" + listOfFilesWithinFolderReccursive("D:/www/App/Tomcat/JasperReports.lib/") + "]");
         listElement.add("\"" + "Java Class Version" + "\": \"" + System.getProperty("java.class.version") + "\"");
         listElement.add("\"" + "Java Endorsed Dirs" + "\": \"" + System.getProperty("java.endorsed.dirs").replace("\\", "\\\\") + "\"");
         listElement.add("\"" + "Java Home" + "\": \"" + System.getProperty("java.home").replace("\\", "\\\\") + "\"");
