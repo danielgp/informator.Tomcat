@@ -26,11 +26,11 @@
     SOFTWARE.
 
 --%>
-<%@page contentType="application/json" pageEncoding="utf-8"%>
+
 <%@page import = "java.io.File" %>
 <%@page import = "java.util.ArrayList" %>
-<%@page import = "java.util.Enumeration" %>
 <%@page import = "java.util.Collections" %>
+
 <%!
     public static String explodeAndSort(String inputString, String inputSeparator) {
         ArrayList<String> listCommonLoader = new ArrayList<>();
@@ -44,7 +44,8 @@
         if (listOfFiles == null) {
             listOfJustFiles.add("directory " + inputFolder + " does not exist (check your configuration or adjust folder value");
         } else {
-            for (int i = 0; i < listOfFiles.length; i++) {
+            Integer intListOfFiles = listOfFiles.length;
+            for (int i = 0; i < intListOfFiles; i++) {
                 if (listOfFiles[i].isFile()) {
                     listOfJustFiles.add(listOfFiles[i].getName());
                 } else if (listOfFiles[i].isDirectory()) {
@@ -73,7 +74,7 @@
         String outputStringInterpreted2 = outputStringInterpreted1.replace("${catalina.home}", "${catalina.home} => " + System.getProperty("catalina.home").replace("\\", "\\\\"));
         return "\"" + strInputStringLabel + "\" : [" + explodeAndSort(outputStringInterpreted2, ",") + "]";
     }
-    public static String buildInformatorTomcatApplication(Integer sServerletMajor, Integer sServletMinor, String sTomcatVersion) {
+    public static String buildInformatorApplication(Integer sServerletMajor, Integer sServletMinor, String sTomcatVersion) {
         ArrayList<String> listElement = new ArrayList<>();
         listElement.add(buildJsonLabelAndFolderString("Catalina Base", System.getProperty("catalina.base")));
         listElement.add(buildJsonLabelAndFolderString("Catalina Home", System.getProperty("catalina.home")));
@@ -98,7 +99,8 @@
         Collections.addAll(listCommonLoader, System.getProperty("common.loader").split("\\s*,\\s*"));
         Collections.sort(listCommonLoader);
         String sJasperReportsFolder = "/";
-        for (int i = 0; i < listCommonLoader.size(); i++) {
+        Integer intListCommonLoaderSize = listCommonLoader.size();
+        for (int i = 0; i < intListCommonLoaderSize; i++) {
             if (listCommonLoader.get(i).contains("JasperReports.lib")) { // this is a convention of included folder
                 sJasperReportsFolder = listCommonLoader.get(i).replace("\"", "").substring(0, (listCommonLoader.get(i).length() - 7));
             }
@@ -108,23 +110,97 @@
         String sReturn = String.join(", ", listElement);
         return "{ " + sReturn + " }";
     }
-    public static String buildInformatorJava() {
+    public static String buildJsonFromThreeLists(ArrayList<String> listAvailablePropertiesKey, ArrayList<String> listAvailablePropertiesValue, ArrayList<String> listAvailablePropertiesType) {
         ArrayList<String> listElement = new ArrayList<>();
-        listElement.add(buildJsonLabelAndFolderString("Boot Library Path", System.getProperty("sun.boot.library.path")));
-        listElement.add(buildJsonLabelAndValueString("Class Version", System.getProperty("java.class.version")));
-        listElement.add(buildJsonLabelAndFolderString("Home", System.getProperty("java.home")));
-        listElement.add(buildJsonLabelAndFolderString("IO Temporary Folder", System.getProperty("java.io.tmpdir")));
-        listElement.add(buildJsonLabelAndFolderString("IO Unicode Encoding", System.getProperty("sun.io.unicode.encoding")));
-        listElement.add(buildJsonLabelAndFolderString("JDK Debug", System.getProperty("jdk.debug")));
-        listElement.add(buildJsonLabelAndFolderString("JDK TLS E[hemeral DH Key Size", System.getProperty("jdk.tls.ephemeralDHKeySize")));
-        listElement.add(buildJsonLabelAndFolderString("Logging Config File", System.getProperty("java.util.logging.config.file")));
-        listElement.add(buildJsonLabelAndFolderString("Logging Manager", System.getProperty("java.util.logging.manager")));
-        listElement.add(buildJsonLabelAndValueString("Runtime Name", System.getProperty("java.runtime.name")));
-        listElement.add(buildJsonLabelAndValueString("Runtime Version", System.getProperty("java.runtime.version")));
-        listElement.add(buildJsonLabelAndValueString("Specification Name", System.getProperty("java.specification.name")));
-        listElement.add(buildJsonLabelAndValueString("Specification Vendor", System.getProperty("java.specification.vendor")));
-        listElement.add(buildJsonLabelAndValueString("Specification Version", System.getProperty("java.specification.version")));
-        listElement.add(buildJsonLabelAndFolderString("Temporary Folder", System.getProperty("java.io.tmpdir")));
+        Integer intListAvailablePropertiesKeySize = listAvailablePropertiesKey.size();
+        for (int i = 0; i < intListAvailablePropertiesKeySize; i++) {
+            switch(listAvailablePropertiesType.get(i)) {
+                case "buildJsonLabelAndValueString":
+                    listElement.add(buildJsonLabelAndValueString(listAvailablePropertiesKey.get(i), System.getProperty(listAvailablePropertiesValue.get(i))));
+                    break;
+                case "buildJsonLabelAndFolderString":
+                    listElement.add(buildJsonLabelAndFolderString(listAvailablePropertiesKey.get(i), System.getProperty(listAvailablePropertiesValue.get(i))));
+                    break;
+            }
+        }
+        Collections.sort(listElement);
+        String sReturn = String.join(", ", listElement);
+        return "{ " + sReturn + " }";
+    }
+    public static String buildInformatorJava() {
+        ArrayList<String> listAvailablePropertiesKey = new ArrayList<>();
+            ArrayList<String> listAvailablePropertiesValue = new ArrayList<>();
+                ArrayList<String> listAvailablePropertiesType = new ArrayList<>();
+        listAvailablePropertiesKey.add("Boot Library Path");
+            listAvailablePropertiesValue.add("sun.boot.library.path");
+                listAvailablePropertiesType.add("buildJsonLabelAndFolderString");
+        listAvailablePropertiesKey.add("Class Version");
+            listAvailablePropertiesValue.add("java.class.version");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Home");
+            listAvailablePropertiesValue.add("java.home");
+                listAvailablePropertiesType.add("buildJsonLabelAndFolderString");
+        listAvailablePropertiesKey.add("IO Temporary Folder");
+            listAvailablePropertiesValue.add("java.io.tmpdir");
+                listAvailablePropertiesType.add("buildJsonLabelAndFolderString");
+        listAvailablePropertiesKey.add("IO Unicode Encoding");
+            listAvailablePropertiesValue.add("sun.io.unicode.encoding");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Logging Config File");
+            listAvailablePropertiesValue.add("java.util.logging.config.file");
+                listAvailablePropertiesType.add("buildJsonLabelAndFolderString");
+        listAvailablePropertiesKey.add("Logging Manager");
+            listAvailablePropertiesValue.add("java.util.logging.manager");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Runtime Name");
+            listAvailablePropertiesValue.add("java.runtime.name");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Runtime Version");
+            listAvailablePropertiesValue.add("java.runtime.version");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Specification Name");
+            listAvailablePropertiesValue.add("java.specification.name");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Specification Vendor");
+            listAvailablePropertiesValue.add("java.specification.vendor");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Specification Version");
+            listAvailablePropertiesValue.add("java.specification.version");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Temporary Folder");
+            listAvailablePropertiesValue.add("java.io.tmpdir");
+                listAvailablePropertiesType.add("buildJsonLabelAndFolderString");
+        listAvailablePropertiesKey.add("Vendor");
+            listAvailablePropertiesValue.add("java.vendor");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Vendor Url");
+            listAvailablePropertiesValue.add("java.vendor.url");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Vendor Url Bugs");
+            listAvailablePropertiesValue.add("java.vendor.url.bug");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Version");
+            listAvailablePropertiesValue.add("java.version");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        String sSpecificationVersion = System.getProperty("java.specification.version");
+        if (sSpecificationVersion.compareTo("10") == 0) {
+            listAvailablePropertiesKey.add("JDK Debug");
+                listAvailablePropertiesValue.add("jdk.debug");
+                    listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+            listAvailablePropertiesKey.add("JDK TLS Ephemeral DH Key Size");
+                listAvailablePropertiesValue.add("jdk.tls.ephemeralDHKeySize");
+                    listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+            listAvailablePropertiesKey.add("Vendor Version");
+                listAvailablePropertiesValue.add("java.vendor.version");
+                    listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+            listAvailablePropertiesKey.add("Version Date");
+                listAvailablePropertiesValue.add("java.version.date");
+                    listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        }
+        return buildJsonFromThreeLists(listAvailablePropertiesKey, listAvailablePropertiesValue, listAvailablePropertiesType);
+    }
+    public static String buildInformatorJavaVM() {
+        ArrayList<String> listElement = new ArrayList<>();
         listElement.add(buildJsonLabelAndValueString("VM Info", System.getProperty("java.vm.info")));
         listElement.add(buildJsonLabelAndValueString("VM Name", System.getProperty("java.vm.name")));
         listElement.add(buildJsonLabelAndValueString("VM Specification Name", System.getProperty("java.vm.specification.name")));
@@ -132,52 +208,93 @@
         listElement.add(buildJsonLabelAndValueString("VM Specification Version", System.getProperty("java.vm.specification.version")));
         listElement.add(buildJsonLabelAndValueString("VM Vendor", System.getProperty("java.vm.vendor")));
         listElement.add(buildJsonLabelAndValueString("VM Version", System.getProperty("java.vm.version")));
-        listElement.add(buildJsonLabelAndValueString("Vendor", System.getProperty("java.vendor")));
-        listElement.add(buildJsonLabelAndValueString("Vendor Url", System.getProperty("java.vendor.url")));
-        listElement.add(buildJsonLabelAndValueString("Vendor Url Bugs", System.getProperty("java.vendor.url.bug")));
-        listElement.add(buildJsonLabelAndValueString("Vendor Version", System.getProperty("java.vendor.version")));
-        listElement.add(buildJsonLabelAndValueString("Version Date", System.getProperty("java.version.date")));
-        listElement.add(buildJsonLabelAndValueString("Version", System.getProperty("java.version")));
         Collections.sort(listElement);
         String sReturn = String.join(", ", listElement);
         return "{ " + sReturn + " }";
     }
     public static String buildInformatorOpeartingSystem() {
-        ArrayList<String> listElement = new ArrayList<>();
-        listElement.add(buildJsonLabelAndValueString("Architecture", System.getProperty("os.arch")));
-        listElement.add(buildJsonLabelAndValueString("Architecture Data Model", System.getProperty("sun.arch.data.model")));
-        listElement.add(buildJsonLabelAndValueString("Desktop", System.getProperty("sun.desktop")));
-        listElement.add(buildJsonLabelAndValueString("File Encoding", System.getProperty("file.encoding")));
-        listElement.add(buildJsonLabelAndValueString("File Encoding Package", System.getProperty("file.encoding.pkg")));
-        listElement.add(buildJsonLabelAndFolderString("File Separator", System.getProperty("file.separator")));
-        listElement.add(buildJsonLabelAndValueString("Name", System.getProperty("os.name")));
-        listElement.add(buildJsonLabelAndValueString("Path Separator", System.getProperty("path.separator")));
-        listElement.add(buildJsonLabelAndValueString("Standard Error Encoding", System.getProperty("sun.stderr.encoding")));
-        listElement.add(buildJsonLabelAndValueString("Standard Out Encoding", System.getProperty("sun.stdout.encoding")));
-        listElement.add(buildJsonLabelAndValueString("Version", System.getProperty("os.version")));
-        Collections.sort(listElement);
-        String sReturn = String.join(", ", listElement);
-        return "{ " + sReturn + " }";
+        ArrayList<String> listAvailablePropertiesKey = new ArrayList<>();
+            ArrayList<String> listAvailablePropertiesValue = new ArrayList<>();
+                ArrayList<String> listAvailablePropertiesType = new ArrayList<>();
+        listAvailablePropertiesKey.add("Architecture");
+            listAvailablePropertiesValue.add("os.arch");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Architecture Data Model");
+            listAvailablePropertiesValue.add("sun.arch.data.model");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Desktop");
+            listAvailablePropertiesValue.add("sun.desktop");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("File Encoding");
+            listAvailablePropertiesValue.add("file.encoding");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("File Encoding Package");
+            listAvailablePropertiesValue.add("file.encoding.pkg");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("File Separator");
+            listAvailablePropertiesValue.add("file.separator");
+                listAvailablePropertiesType.add("buildJsonLabelAndFolderString");
+        listAvailablePropertiesKey.add("Name");
+            listAvailablePropertiesValue.add("os.name");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Patch Level");
+            listAvailablePropertiesValue.add("sun.os.patch.level");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Path Separator");
+            listAvailablePropertiesValue.add("path.separator");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Version");
+            listAvailablePropertiesValue.add("os.version");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        String sSpecificationVersion = System.getProperty("java.specification.version");
+        if (sSpecificationVersion.compareTo("10") == 0) {
+            listAvailablePropertiesKey.add("Standard Error Encoding");
+                listAvailablePropertiesValue.add("sun.stderr.encoding");
+                    listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+            listAvailablePropertiesKey.add("Standard Out Encoding");
+                listAvailablePropertiesValue.add("sun.stdout.encoding");
+                    listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        }
+        return buildJsonFromThreeLists(listAvailablePropertiesKey, listAvailablePropertiesValue, listAvailablePropertiesType);
     }
     public static String buildInformatorUser() {
-        ArrayList<String> listElement = new ArrayList<>();
-        listElement.add(buildJsonLabelAndValueString("Account Name", System.getProperty("user.name")));
-        listElement.add(buildJsonLabelAndValueString("Country Format", System.getProperty("user.country.format")));
-        listElement.add(buildJsonLabelAndValueString("Country", System.getProperty("user.country")));
-        listElement.add(buildJsonLabelAndFolderString("Home Folder", System.getProperty("user.home")));
-        listElement.add(buildJsonLabelAndValueString("Language Format", System.getProperty("user.language.format")));
-        listElement.add(buildJsonLabelAndValueString("Language", System.getProperty("user.language")));
-        listElement.add(buildJsonLabelAndValueString("Time Zone", System.getProperty("user.timezone")));
-        Collections.sort(listElement);
-        String sReturn = String.join(", ", listElement);
-        return "{ " + sReturn + " }";
+        ArrayList<String> listAvailablePropertiesKey = new ArrayList<>();
+            ArrayList<String> listAvailablePropertiesValue = new ArrayList<>();
+                ArrayList<String> listAvailablePropertiesType = new ArrayList<>();
+        listAvailablePropertiesKey.add("Account Name");
+            listAvailablePropertiesValue.add("user.name");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Country");
+            listAvailablePropertiesValue.add("user.country");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Home Folder");
+            listAvailablePropertiesValue.add("user.home");
+                listAvailablePropertiesType.add("buildJsonLabelAndFolderString");
+        listAvailablePropertiesKey.add("Language");
+            listAvailablePropertiesValue.add("user.language");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        listAvailablePropertiesKey.add("Time Zone");
+            listAvailablePropertiesValue.add("user.timezone");
+                listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        String sSpecificationVersion = System.getProperty("java.specification.version");
+        if (sSpecificationVersion.compareTo("10") == 0) {
+            listAvailablePropertiesKey.add("Country Format");
+                listAvailablePropertiesValue.add("user.country.format");
+                    listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+            listAvailablePropertiesKey.add("Language Format");
+                listAvailablePropertiesValue.add("user.language.format");
+                    listAvailablePropertiesType.add("buildJsonLabelAndValueString");
+        }
+        return buildJsonFromThreeLists(listAvailablePropertiesKey, listAvailablePropertiesValue, listAvailablePropertiesType);
     }
     public static String buildInformator(Integer sServerletMajor, Integer sServletMinor, String sTomcatVersion) {
-        String sReturn = "\"Application\": " + buildInformatorTomcatApplication(sServerletMajor, sServletMinor, sTomcatVersion)
+        String sReturn = "\"Application\": " + buildInformatorApplication(sServerletMajor, sServletMinor, sTomcatVersion)
             + ", "
             + "\"Jasper Reports\": " + buildInformatorJasperReports()
             + ", "
             + "\"Java\": " + buildInformatorJava()
+            + ", "
+            + "\"Java VM\": " + buildInformatorJavaVM()
             + ", "
             + "\"Operating System\": " + buildInformatorOpeartingSystem()
             + ", "
@@ -185,4 +302,5 @@
         return "{ " + sReturn + " }";
     }
 %>
+<%@page contentType="application/json" pageEncoding="utf-8"%>
 <%= buildInformator(application.getMajorVersion(), application.getMinorVersion(), application.getServerInfo()) %>
