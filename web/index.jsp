@@ -27,10 +27,10 @@
 
 --%>
 
-<%@page import = "java.util.ArrayList" %>
-<%@page import = "java.util.Collections" %>
+<%@page import="java.util.ArrayList"%>
+<%@page import="java.util.Collections"%>
 
-<%@page import = "helpingJSON.helpingFunctions" %>
+<%@page import="helpingJSON.helpingFunctions"%>
 
 <%!
     public String buildInformatorApplication(Integer sServerletMajor, Integer sServletMinor, String sTomcatVersion) {
