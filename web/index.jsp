@@ -27,102 +27,35 @@
 
 --%>
 
-<%@page import = "java.io.File" %>
 <%@page import = "java.util.ArrayList" %>
 <%@page import = "java.util.Collections" %>
 
+<%@page import = "helpingJSON.helpingFunctions" %>
+
 <%!
-    public static String explodeAndSort(String inputString, String inputSeparator) {
-        ArrayList<String> listCommonLoader = new ArrayList<>();
-        Collections.addAll(listCommonLoader, inputString.split("\\s*" + inputSeparator + "\\s*"));
-        Collections.sort(listCommonLoader);
-        return "\"" + String.join("\", \"", listCommonLoader) + "\"";
-    }
-    public static String listOfFilesWithinFolderReccursive(String inputFolder) {
-        ArrayList<String> listOfJustFiles = new ArrayList<>();
-        File[] listOfFiles  = new File(inputFolder).listFiles();
-        if (listOfFiles == null) {
-            listOfJustFiles.add("directory " + inputFolder + " does not exist (check your configuration or adjust folder value");
-        } else {
-            Integer intListOfFiles = listOfFiles.length;
-            for (int i = 0; i < intListOfFiles; i++) {
-                if (listOfFiles[i].isFile()) {
-                    listOfJustFiles.add(listOfFiles[i].getName());
-                } else if (listOfFiles[i].isDirectory()) {
-                    listOfFilesWithinFolderReccursive(listOfFiles[i].getAbsolutePath());
-                }
-            }
-            Collections.sort(listOfJustFiles);
-        }
-        return "\"" + String.join("\", \"", listOfJustFiles) + "\"";
-    }
-    public static String buildJsonLabelAndFolderString(String strInputStringLabel, String strInputStringFolder) {
-        return "\"" + strInputStringLabel + "\" : \"" + strInputStringFolder.replace("\\", "\\\\") + "\"";
-    }
-    public static String buildJsonLabelAndValueString(String strInputStringLabel, String strInputStringValue) {
-        return "\"" + strInputStringLabel + "\" : \"" + strInputStringValue.replaceAll("\"", "") + "\"";
-    }
-    public static String buildJsonLabelAndValueStringToArray(String strInputStringLabel, String inputString) {
-        return "\"" + strInputStringLabel + "\" : [" + explodeAndSort(inputString, ",") + "]";
-    }
-    public static String buildJsonLabelAndValueArrayListOfFileFromFolder(String strInputStringLabel, String inputFolderName) {
-        return "\"" + strInputStringLabel + "\" : [" + listOfFilesWithinFolderReccursive(inputFolderName) + "]";
-    }
-    public static String buildJsonLabelAndValueStringToArraySpecial(String strInputStringLabel, String inputString) {
-        String outputString = inputString.replace("\"", "").replace("/", "\\\\");
-        String outputStringInterpreted1 = outputString.replace("${catalina.base}", "${catalina.base} => " + System.getProperty("catalina.base").replace("\\", "\\\\"));
-        String outputStringInterpreted2 = outputStringInterpreted1.replace("${catalina.home}", "${catalina.home} => " + System.getProperty("catalina.home").replace("\\", "\\\\"));
-        return "\"" + strInputStringLabel + "\" : [" + explodeAndSort(outputStringInterpreted2, ",") + "]";
-    }
-    public static String buildInformatorApplication(Integer sServerletMajor, Integer sServletMinor, String sTomcatVersion) {
+    public String buildInformatorApplication(Integer sServerletMajor, Integer sServletMinor, String sTomcatVersion) {
+        helpingFunctions fnJson = new helpingFunctions();
         ArrayList<String> listElement = new ArrayList<>();
-        listElement.add(buildJsonLabelAndFolderString("Catalina Base", System.getProperty("catalina.base")));
-        listElement.add(buildJsonLabelAndFolderString("Catalina Home", System.getProperty("catalina.home")));
-        listElement.add(buildJsonLabelAndValueStringToArraySpecial("Common Loader", System.getProperty("common.loader")));
-        listElement.add(buildJsonLabelAndValueString("Full Name and Version", sTomcatVersion));
-        listElement.add(buildJsonLabelAndValueString("JSP Version", JspFactory.getDefaultFactory().getEngineInfo().getSpecificationVersion()));
-        listElement.add(buildJsonLabelAndValueString("Name", sTomcatVersion.split("/")[0]));
-        listElement.add(buildJsonLabelAndValueStringToArray("Package Access", System.getProperty("package.access")));
-        listElement.add(buildJsonLabelAndValueStringToArray("Package Definition", System.getProperty("package.definition")));
-        listElement.add(buildJsonLabelAndValueString("Servlet Version", sServerletMajor + "." + sServletMinor));
-        listElement.add(buildJsonLabelAndValueStringToArray("Standard Jar Skip Filter", System.getProperty("tomcat.util.scan.StandardJarScanFilter.jarsToSkip")));
-        listElement.add(buildJsonLabelAndValueStringToArray("Standard Jar Scan Filter", System.getProperty("tomcat.util.scan.StandardJarScanFilter.jarsToScan")));
-        listElement.add(buildJsonLabelAndValueString("Version", sTomcatVersion.split("/")[1]));
+        listElement.add(fnJson.buildJsonLabelAndFolderString("Catalina Base", System.getProperty("catalina.base")));
+        listElement.add(fnJson.buildJsonLabelAndFolderString("Catalina Home", System.getProperty("catalina.home")));
+        listElement.add(fnJson.buildJsonLabelAndValueStringToArraySpecial("Common Loader", System.getProperty("common.loader")));
+        listElement.add(fnJson.buildJsonLabelAndValueString("Full Name and Version", sTomcatVersion));
+        listElement.add(fnJson.buildJsonLabelAndValueString("JSP Version", JspFactory.getDefaultFactory().getEngineInfo().getSpecificationVersion()));
+        listElement.add(fnJson.buildJsonLabelAndValueString("Name", sTomcatVersion.split("/")[0]));
+        listElement.add(fnJson.buildJsonLabelAndValueStringToArray("Package Access", System.getProperty("package.access")));
+        listElement.add(fnJson.buildJsonLabelAndValueStringToArray("Package Definition", System.getProperty("package.definition")));
+        listElement.add(fnJson.buildJsonLabelAndValueString("Servlet Version", sServerletMajor + "." + sServletMinor));
+        listElement.add(fnJson.buildJsonLabelAndValueStringToArray("Standard Jar Skip Filter", System.getProperty("tomcat.util.scan.StandardJarScanFilter.jarsToSkip")));
+        listElement.add(fnJson.buildJsonLabelAndValueStringToArray("Standard Jar Scan Filter", System.getProperty("tomcat.util.scan.StandardJarScanFilter.jarsToScan")));
+        listElement.add(fnJson.buildJsonLabelAndValueString("Version", sTomcatVersion.split("/")[1]));
         Collections.sort(listElement);
         String sReturn = String.join(", ", listElement);
         return "{ " + sReturn + " }";
     }
-    public static String buildInformatorJasperReports() {
+    public String buildInformatorJasperReports() {
+        helpingFunctions fnJson = new helpingFunctions();
         ArrayList<String> listElement = new ArrayList<>();
-        String sOperatingSystem = System.getProperty("sun.desktop");
-        ArrayList<String> listCommonLoader = new ArrayList<>();
-        Collections.addAll(listCommonLoader, System.getProperty("common.loader").split("\\s*,\\s*"));
-        Collections.sort(listCommonLoader);
-        String sJasperReportsFolder = "/";
-        Integer intListCommonLoaderSize = listCommonLoader.size();
-        for (int i = 0; i < intListCommonLoaderSize; i++) {
-            if (listCommonLoader.get(i).contains("JasperReports.lib")) { // this is a convention of included folder
-                sJasperReportsFolder = listCommonLoader.get(i).replace("\"", "").substring(0, (listCommonLoader.get(i).length() - 7));
-            }
-        }
-        listElement.add(buildJsonLabelAndValueArrayListOfFileFromFolder("JasperReports libraries", sJasperReportsFolder));
-        Collections.sort(listElement);
-        String sReturn = String.join(", ", listElement);
-        return "{ " + sReturn + " }";
-    }
-    public static String buildJsonFromThreeLists(ArrayList<String> listAvailablePropertiesKey, ArrayList<String> listAvailablePropertiesValue, ArrayList<String> listAvailablePropertiesType) {
-        ArrayList<String> listElement = new ArrayList<>();
-        Integer intListAvailablePropertiesKeySize = listAvailablePropertiesKey.size();
-        for (int i = 0; i < intListAvailablePropertiesKeySize; i++) {
-            switch(listAvailablePropertiesType.get(i)) {
-                case "buildJsonLabelAndValueString":
-                    listElement.add(buildJsonLabelAndValueString(listAvailablePropertiesKey.get(i), System.getProperty(listAvailablePropertiesValue.get(i))));
-                    break;
-                case "buildJsonLabelAndFolderString":
-                    listElement.add(buildJsonLabelAndFolderString(listAvailablePropertiesKey.get(i), System.getProperty(listAvailablePropertiesValue.get(i))));
-                    break;
-            }
-        }
+        listElement.add(fnJson.buildJsonLabelAndValueArrayListOfFileFromFolder("JasperReports libraries", fnJson.getJasperReportsLibrariesFolder()));
         Collections.sort(listElement);
         String sReturn = String.join(", ", listElement);
         return "{ " + sReturn + " }";
@@ -197,17 +130,19 @@
                 listAvailablePropertiesValue.add("java.version.date");
                     listAvailablePropertiesType.add("buildJsonLabelAndValueString");
         }
-        return buildJsonFromThreeLists(listAvailablePropertiesKey, listAvailablePropertiesValue, listAvailablePropertiesType);
+        helpingFunctions fnJson = new helpingFunctions();
+        return fnJson.buildJsonFromThreeLists(listAvailablePropertiesKey, listAvailablePropertiesValue, listAvailablePropertiesType);
     }
     public static String buildInformatorJavaVM() {
+        helpingFunctions fnJson = new helpingFunctions();
         ArrayList<String> listElement = new ArrayList<>();
-        listElement.add(buildJsonLabelAndValueString("VM Info", System.getProperty("java.vm.info")));
-        listElement.add(buildJsonLabelAndValueString("VM Name", System.getProperty("java.vm.name")));
-        listElement.add(buildJsonLabelAndValueString("VM Specification Name", System.getProperty("java.vm.specification.name")));
-        listElement.add(buildJsonLabelAndValueString("VM Specification Vendor", System.getProperty("java.vm.specification.vendor")));
-        listElement.add(buildJsonLabelAndValueString("VM Specification Version", System.getProperty("java.vm.specification.version")));
-        listElement.add(buildJsonLabelAndValueString("VM Vendor", System.getProperty("java.vm.vendor")));
-        listElement.add(buildJsonLabelAndValueString("VM Version", System.getProperty("java.vm.version")));
+        listElement.add(fnJson.buildJsonLabelAndValueString("VM Info", System.getProperty("java.vm.info")));
+        listElement.add(fnJson.buildJsonLabelAndValueString("VM Name", System.getProperty("java.vm.name")));
+        listElement.add(fnJson.buildJsonLabelAndValueString("VM Specification Name", System.getProperty("java.vm.specification.name")));
+        listElement.add(fnJson.buildJsonLabelAndValueString("VM Specification Vendor", System.getProperty("java.vm.specification.vendor")));
+        listElement.add(fnJson.buildJsonLabelAndValueString("VM Specification Version", System.getProperty("java.vm.specification.version")));
+        listElement.add(fnJson.buildJsonLabelAndValueString("VM Vendor", System.getProperty("java.vm.vendor")));
+        listElement.add(fnJson.buildJsonLabelAndValueString("VM Version", System.getProperty("java.vm.version")));
         Collections.sort(listElement);
         String sReturn = String.join(", ", listElement);
         return "{ " + sReturn + " }";
@@ -255,7 +190,8 @@
                 listAvailablePropertiesValue.add("sun.stdout.encoding");
                     listAvailablePropertiesType.add("buildJsonLabelAndValueString");
         }
-        return buildJsonFromThreeLists(listAvailablePropertiesKey, listAvailablePropertiesValue, listAvailablePropertiesType);
+        helpingFunctions fnJson = new helpingFunctions();
+        return fnJson.buildJsonFromThreeLists(listAvailablePropertiesKey, listAvailablePropertiesValue, listAvailablePropertiesType);
     }
     public static String buildInformatorUser() {
         ArrayList<String> listAvailablePropertiesKey = new ArrayList<>();
@@ -285,10 +221,12 @@
                 listAvailablePropertiesValue.add("user.language.format");
                     listAvailablePropertiesType.add("buildJsonLabelAndValueString");
         }
-        return buildJsonFromThreeLists(listAvailablePropertiesKey, listAvailablePropertiesValue, listAvailablePropertiesType);
+        helpingFunctions fnJson = new helpingFunctions();
+        return fnJson.buildJsonFromThreeLists(listAvailablePropertiesKey, listAvailablePropertiesValue, listAvailablePropertiesType);
     }
-    public static String buildInformator(Integer sServerletMajor, Integer sServletMinor, String sTomcatVersion) {
-        String sReturn = "\"Application\": " + buildInformatorApplication(sServerletMajor, sServletMinor, sTomcatVersion)
+    public String buildInformator(Integer sServerletMajor, Integer sServletMinor, String sTomcatVersion) {
+        String sReturn = "" 
+            + "\"Application\": " + buildInformatorApplication(sServerletMajor, sServletMinor, sTomcatVersion)
             + ", "
             + "\"Jasper Reports\": " + buildInformatorJasperReports()
             + ", "
