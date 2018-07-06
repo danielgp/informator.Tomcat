@@ -38,10 +38,10 @@ public class helpingFunctions {
         for (int i = 0; i < intListAvailablePropertiesKeySize; i++) {
             switch(listAvailablePropertiesType.get(i)) {
                 case "buildJsonLabelAndValueString":
-                    listElement.add(buildJsonLabelAndValueString(listAvailablePropertiesKey.get(i), System.getProperty(listAvailablePropertiesValue.get(i))));
+                    listElement.add(buildJsonLabelAndValueString(listAvailablePropertiesKey.get(i), getSystemPropertyOrEmptyIfNull(listAvailablePropertiesValue.get(i))));
                     break;
                 case "buildJsonLabelAndFolderString":
-                    listElement.add(buildJsonLabelAndFolderString(listAvailablePropertiesKey.get(i), System.getProperty(listAvailablePropertiesValue.get(i))));
+                    listElement.add(buildJsonLabelAndFolderString(listAvailablePropertiesKey.get(i), getSystemPropertyOrEmptyIfNull(listAvailablePropertiesValue.get(i))));
                     break;
             }
         }
@@ -86,6 +86,12 @@ public class helpingFunctions {
             }
         }
         return sJasperReportsFolder;
+    }
+    private String getSystemPropertyOrEmptyIfNull(String strInputSystemPropertyLabel) {
+        if (System.getProperty(strInputSystemPropertyLabel) == null) {
+            return "---";
+        }
+        return System.getProperty(strInputSystemPropertyLabel);
     }
     public String listOfFilesWithinFolderReccursive(String inputFolder) {
         ArrayList<String> listOfJustFiles = new ArrayList<>();
