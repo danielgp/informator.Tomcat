@@ -147,7 +147,7 @@
         String sReturn = String.join(", ", listElement);
         return "{ " + sReturn + " }";
     }
-    public static String buildInformatorOpeartingSystem() {
+    public static String buildInformatorOperatingSystem() {
         ArrayList<String> listAvailablePropertiesKey = new ArrayList<>();
             ArrayList<String> listAvailablePropertiesValue = new ArrayList<>();
                 ArrayList<String> listAvailablePropertiesType = new ArrayList<>();
@@ -234,7 +234,7 @@
             + ", "
             + "\"Java VM\": " + buildInformatorJavaVM()
             + ", "
-            + "\"Operating System\": " + buildInformatorOpeartingSystem()
+            + "\"Operating System\": " + buildInformatorOperatingSystem()
             + ", "
             + "\"User\": " + buildInformatorUser();
         return "{ " + sReturn + " }";
