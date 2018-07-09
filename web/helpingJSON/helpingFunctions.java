@@ -36,13 +36,16 @@ public class helpingFunctions {
         ArrayList<String> listElement = new ArrayList<>();
         Integer intListAvailablePropertiesKeySize = listAvailablePropertiesKey.size();
         for (int i = 0; i < intListAvailablePropertiesKeySize; i++) {
-            switch(listAvailablePropertiesType.get(i)) {
-                case "buildJsonLabelAndValueString":
-                    listElement.add(buildJsonLabelAndValueString(listAvailablePropertiesKey.get(i), getSystemPropertyOrEmptyIfNull(listAvailablePropertiesValue.get(i))));
-                    break;
-                case "buildJsonLabelAndFolderString":
-                    listElement.add(buildJsonLabelAndFolderString(listAvailablePropertiesKey.get(i), getSystemPropertyOrEmptyIfNull(listAvailablePropertiesValue.get(i))));
-                    break;
+            String crtPropertyValue = listAvailablePropertiesValue.get(i);
+            if (getSystemPropertyOrEmptyIfNull(crtPropertyValue).compareTo("---") != 0) {
+                switch(listAvailablePropertiesType.get(i)) {
+                    case "buildJsonLabelAndValueString":
+                        listElement.add(buildJsonLabelAndValueString(listAvailablePropertiesKey.get(i), crtPropertyValue));
+                        break;
+                    case "buildJsonLabelAndFolderString":
+                        listElement.add(buildJsonLabelAndFolderString(listAvailablePropertiesKey.get(i), crtPropertyValue));
+                        break;
+                }
             }
         }
         Collections.sort(listElement);
